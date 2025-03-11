@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.ant-menu-item-selected {
+    background-color: #d28a06 !important; /* Yellow background */
+    color: #ffffff !important; /* White text */
+  }
+  
+  .ant-menu-item-selected a {
+    color: #ffffff !important; /* White link text */
+  }
+  .ant-upload-wrapper.ant-upload-picture-card-wrapper .ant-upload.ant-upload-select {
+    width: 100px !important;
+    height: 60px !important;
+    text-align: center;
+  }
+  
