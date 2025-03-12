@@ -54,20 +54,7 @@ const DashBoard = () => {
       </div>
 
       {/* Deals Details */}
-      <div className="bg-white shadow-md rounded-lg p-6">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold mb-4">Deals Details</h3>
-          <Select
-            showSearch
-            placeholder="Select a month"
-            optionFilterProp="label"
-            onChange={onChange}
-            onSearch={onSearch}
-            options={timeOptions}
-          />
-        </div>
-        <AllInventory />
-      </div>
+      <AllInventory />
     </div>
   );
 };
