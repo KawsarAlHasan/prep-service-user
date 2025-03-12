@@ -97,7 +97,10 @@ const SendInventory = () => {
       layout="vertical"
     >
       {inventories?.map((inventory, index) => (
-        <div key={inventory.id} className="flex justify-between mb-4">
+        <div
+          key={inventory.id}
+          className="flex justify-between mb-4 shadow-md p-1"
+        >
           {/* name */}
           <Form.Item
             label="Name"

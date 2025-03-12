@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 export const API = axios.create({
-  baseURL: "http://localhost:7000/api/v1",
-  // baseURL: "https://prep-service.onrender.com/api/v1",
+  // baseURL: "http://localhost:7000/api/v1",
+  baseURL: "https://prep-service.onrender.com/api/v1",
 });
 
 API.interceptors.request.use((config) => {
@@ -52,4 +52,54 @@ export const useRateType = () => {
   });
 
   return { rateType, isLoading, isError, error, refetch };
+};
+
+export const useAllInventory = () => {
+  const getInventory = async () => {
+    const response = await API.get("/inventory");
+    return response.data;
+  };
+
+  const {
+    data: allInventory = [],
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["allInventory"],
+    queryFn: getInventory,
+  });
+
+  return { allInventory, isLoading, isError, error, refetch };
+};
+
+// get all Inventories
+export const useMyInventories = ({
+  start_date,
+  end_date,
+  page = 1,
+  limit = 10,
+} = {}) => {
+  const getMyInventories = async () => {
+    const response = await API.get("/inventory", {
+      params: { start_date, end_date, page, limit },
+    });
+    return response.data;
+  };
+
+  const {
+    data: response = {},
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["myInventories", start_date, end_date, page, limit],
+    queryFn: getMyInventories,
+  });
+
+  const { data: myInventories = [], pagination = {} } = response;
+
+  return { myInventories, pagination, isLoading, isError, error, refetch };
 };

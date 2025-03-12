@@ -1,66 +1,9 @@
-import { Select, Table } from "antd";
-import { AiFillPrinter } from "react-icons/ai";
+import { Select } from "antd";
 import { FaUserAlt, FaBoxOpen, FaDollarSign } from "react-icons/fa";
 import { BiTimeFive } from "react-icons/bi";
+import AllInventory from "./AllInventory";
 
 const DashBoard = () => {
-  const dataSource = Array(50) // Increased to demonstrate pagination
-    .fill(null)
-    .map((_, index) => ({
-      key: index,
-      date: "01/01/2024",
-      transaction: `101-00${979 + index}`,
-      type: "FBM",
-      quantity: 1,
-      status: "Out for Delivery",
-      amount: "$34,295",
-    }));
-
-  const columns = [
-    {
-      title: "Date",
-      dataIndex: "date",
-      key: "date",
-    },
-    {
-      title: "Transaction No.",
-      dataIndex: "transaction",
-      key: "transaction",
-    },
-    {
-      title: "Type",
-      dataIndex: "type",
-      key: "type",
-    },
-    {
-      title: "Qty.",
-      dataIndex: "quantity",
-      key: "quantity",
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (status) => (
-        <span className="text-green-600 bg-green-100 px-2 py-1 rounded-full">
-          {status}
-        </span>
-      ),
-    },
-    {
-      title: "Amount",
-      dataIndex: "amount",
-      key: "amount",
-    },
-    {
-      title: "Print",
-      key: "print",
-      render: () => (
-        <AiFillPrinter className="text-orange-500 text-lg cursor-pointer hover:scale-110" />
-      ),
-    },
-  ];
-
   const onChange = (value) => {
     console.log(`selected ${value}`);
   };
@@ -123,16 +66,7 @@ const DashBoard = () => {
             options={timeOptions}
           />
         </div>
-        <Table
-          dataSource={dataSource}
-          columns={columns}
-          pagination={{
-            pageSize: 5, // Items per page
-            showSizeChanger: true, // Allow user to change page size
-            pageSizeOptions: ["5", "10", "20"], // Options for page size
-          }}
-          className="custom-table"
-        />
+        <AllInventory />
       </div>
     </div>
   );

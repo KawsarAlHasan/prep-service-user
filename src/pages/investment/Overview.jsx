@@ -1,11 +1,12 @@
-import { Card, Select, Table } from "antd";
+import { useState } from "react";
+import { Card, Select } from "antd";
 import {
   BoxPlotOutlined,
   ClockCircleOutlined,
   CheckOutlined,
 } from "@ant-design/icons";
-import { AiFillPrinter } from "react-icons/ai";
 import { FaUserAlt } from "react-icons/fa";
+import AllInventory from "../AllInventory";
 
 const Overview = () => {
   const stats = [
@@ -18,74 +19,13 @@ const Overview = () => {
     { title: "Shipped", value: "$89,000", icon: <CheckOutlined /> },
   ];
 
-  const dataSource = Array(50) // Increased to demonstrate pagination
-    .fill(null)
-    .map((_, index) => ({
-      key: index,
-      date: "01/01/2024",
-      transaction: `101-00${979 + index}`,
-      type: "FBM",
-      quantity: 1,
-      status: "Out for Delivery",
-      amount: "$34,295",
-    }));
-
-  const columns = [
-    {
-      title: "Date",
-      dataIndex: "date",
-      key: "date",
-    },
-    {
-      title: "Transaction No.",
-      dataIndex: "transaction",
-      key: "transaction",
-    },
-    {
-      title: "Type",
-      dataIndex: "type",
-      key: "type",
-    },
-    {
-      title: "Qty.",
-      dataIndex: "quantity",
-      key: "quantity",
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (status) => (
-        <span className="text-green-600 bg-green-100 px-2 py-1 rounded-full">
-          {status}
-        </span>
-      ),
-    },
-    {
-      title: "Amount",
-      dataIndex: "amount",
-      key: "amount",
-    },
-    {
-      title: "Print",
-      key: "print",
-      render: () => (
-        <AiFillPrinter className="text-orange-500 text-lg cursor-pointer hover:scale-110" />
-      ),
-    },
-  ];
   const onChange = (value) => {
     console.log(`selected ${value}`);
   };
   const onSearch = (value) => {
     console.log("search:", value);
   };
-  const timeOptions = [
-    { value: "today", label: "Today" },
-    { value: "yesterday", label: "Yesterday" },
-    { value: "thisMonth", label: "This Month" },
-    { value: "previousMonth", label: "Previous Month" },
-  ];
+
   const monthData = [
     { value: "january", label: "January" },
     { value: "february", label: "February" },
@@ -100,6 +40,7 @@ const Overview = () => {
     { value: "november", label: "November" },
     { value: "december", label: "December" },
   ];
+
   return (
     <div className="p-4 bg-gray-100 min-h-screen">
       <div className="mb-3 flex justify-between">
@@ -132,29 +73,7 @@ const Overview = () => {
       </div>
 
       {/* Deals Details */}
-      <div className="bg-white shadow-md rounded-lg p-6">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold mb-4">Deals Details</h3>
-          <Select
-            showSearch
-            placeholder="Select a month"
-            optionFilterProp="label"
-            onChange={onChange}
-            onSearch={onSearch}
-            options={timeOptions}
-          />
-        </div>
-        <Table
-          dataSource={dataSource}
-          columns={columns}
-          pagination={{
-            pageSize: 5, // Items per page
-            showSizeChanger: true, // Allow user to change page size
-            pageSizeOptions: ["5", "10", "20"], // Options for page size
-          }}
-          className="custom-table"
-        />
-      </div>
+      <AllInventory />
     </div>
   );
 };

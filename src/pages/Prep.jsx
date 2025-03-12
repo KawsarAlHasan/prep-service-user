@@ -1,165 +1,203 @@
-import { useState } from "react";
-import { Button, DatePicker, Input, Select } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import React, { useState } from "react";
+import { Form, message, Input, Select, DatePicker, Upload, Button } from "antd";
+import { UploadOutlined, PlusOutlined, MinusOutlined } from "@ant-design/icons";
+import { API, useRateType } from "../api/api";
+import { useNavigate } from "react-router-dom";
 
 const Prep = () => {
-  const [rows, setRows] = useState([
-    { date: "", item: "", asin: "", expiry: "", image: "", qty: "", type: "" },
-  ]);
-  const [fileList, setFileList] = useState([]);
-  const handleAddRow = () => {
-    setRows([
-      ...rows,
-      {
-        date: "",
-        item: "",
-        asin: "",
-        expiry: "",
-        image: "",
-        qty: "",
-        type: "",
-      },
-    ]);
-  };
+  const navigate = useNavigate();
+  const { rateType, isLoading } = useRateType();
+  const [loading, setLoading] = useState(false);
+  const [form] = Form.useForm();
+  const [inventories, setInventories] = useState([]);
 
-  const handleInputChange = (index, field, value) => {
-    const updatedRows = [...rows];
-    updatedRows[index][field] = value;
-    setRows(updatedRows);
-  };
+  const onFinish = async (values) => {
+    const formData = new FormData();
 
-  const handleImageUpload = (event) => {
-    const files = event.target.files;
-    if (files.length > 0) {
-      const updatedFiles = Array.from(files).map((file) => ({
-        uid: file.name,
-        name: file.name,
-        status: "done",
-        url: URL.createObjectURL(file),
-      }));
-      setFileList([...fileList, ...updatedFiles]);
+    // Convert inventories to JSON string and append
+    formData.append("inventories", JSON.stringify(values.inventories));
+
+    values.inventories.forEach((item, index) => {
+      if (item.image?.fileList?.[0]) {
+        formData.append("images", item.image.fileList[0].originFileObj);
+      }
+    });
+
+    try {
+      setLoading(true);
+      const response = await API.post("/inventory/create", formData);
+      if (response.status == 200) {
+        message.success("Inventory added Successfully");
+        navigate("/");
+      }
+    } catch (error) {
+      message.error(`Error: ${error.message}` || "Something went wrong");
+    } finally {
+      setLoading(false);
     }
   };
 
+  const addRow = () => {
+    const newRow = {
+      id: Date.now(),
+      name: "",
+      date: null,
+      amount: 0,
+      quantity: 0,
+      image: null,
+    };
+    setInventories([...inventories, newRow]);
+  };
+
+  const removeRow = (id) => {
+    const newInventories = inventories.filter((item) => item.id !== id);
+    setInventories(newInventories);
+    form.setFieldsValue({
+      inventories: newInventories,
+    });
+  };
+
+  const handleValuesChange = (changedValues, allValues) => {
+    const updatedInventories = allValues.inventories.map((item, index) => {
+      let updatedItem = { ...inventories[index], ...item };
+
+      if (updatedItem.rate_type && updatedItem.quantity) {
+        const selectedRateType = rateType?.data.find(
+          (rate) => rate.id === updatedItem.rate_type
+        );
+
+        if (selectedRateType && selectedRateType.rate.length > 0) {
+          const matchedRate = selectedRateType.rate.find(
+            (r) =>
+              updatedItem.quantity >= r.start_unit &&
+              updatedItem.quantity <= r.end_unit
+          );
+
+          if (matchedRate) {
+            updatedItem.amount = matchedRate.rate * updatedItem.quantity;
+          } else {
+            updatedItem.amount = 0;
+          }
+        }
+      }
+
+      return updatedItem;
+    });
+
+    setInventories(updatedInventories);
+    form.setFieldsValue({ inventories: updatedInventories });
+  };
+
   return (
-    <div className="p-4 bg-gray-50 min-h-screen">
-      <h1 className="text-xl font-bold mb-6">Dynamic Form</h1>
-      <div className="space-y-4">
-        {rows.map((row, index) => (
-          <div
-            key={index}
-            className="grid grid-cols-8 gap-4 items-center bg-white p-4 rounded-lg shadow-md"
-          >
-            {/* Date  */}
-            <div className="grid items-center">
-              <h4 className="text-lg">Date</h4>
-              <DatePicker
-                onChange={(e) =>
-                  handleInputChange(index, "date", e.target.value)
-                }
-                placeholder="Date"
-                className="col-span-1"
-              />
-            </div>
-            {/* Items  */}
-            <div className="grid items-center">
-              <h4 className="text-lg">Item</h4>
-              <Input
-                placeholder="Item"
-                value={row.item}
-                onChange={(e) =>
-                  handleInputChange(index, "item", e.target.value)
-                }
-                className="col-span-1"
-              />
-            </div>
-            {/* ASIN  */}
-            <div className="grid items-center">
-              <h4 className="text-lg">ASIN</h4>
-              <Input
-                placeholder="ASIN"
-                value={row.asin}
-                onChange={(e) =>
-                  handleInputChange(index, "asin", e.target.value)
-                }
-                className="col-span-1"
-              />
-            </div>
-            <div className="grid items-center">
-              <h4 className="text-lg">Date of Expiry</h4>
-              <DatePicker
-                onChange={(e) =>
-                  handleInputChange(index, "date", e.target.value)
-                }
-                placeholder="Date of Expiry"
-                className="col-span-1"
-              />
-            </div>
-            {/* image upload  */}
-            <div className="text-center">
-              <h4 className="text-lg">Image</h4>
-              <Button
-                icon={<PlusOutlined />}
-                className=""
-                onClick={() =>
-                  document.getElementById("image-upload-input").click()
-                }
-              />
-              <input
-                id="image-upload-input"
-                type="file"
-                accept="image/*"
-                multiple
-                className="hidden"
-                onChange={handleImageUpload}
-              />
-            </div>
-            {/* Quentity  */}
-            <div className="grid items-center">
-              <h4 className="text-lg">Quentity</h4>
-              <Input
-                placeholder="Qty"
-                value={row.qty}
-                onChange={(e) =>
-                  handleInputChange(index, "qty", e.target.value)
-                }
-                className="col-span-1"
-              />
-            </div>
-            <div className="grid items-center w-full">
-              <h4 className="text-lg">Date of Expiry</h4>
-              <Select
-                placeholder="Type"
-                value={row.type || undefined}
-                onChange={(value) => handleInputChange(index, "type", value)}
-                className="col-span-1"
-                options={[
-                  { value: "Type 1", label: "Type 1" },
-                  { value: "Type 2", label: "Type 2" },
-                ]}
-              />
-            </div>
-            <div className="mt-7">
-              <Button
-                type="dashed"
-                shape="circle"
-                icon={<PlusOutlined />}
-                onClick={handleAddRow}
-                className="col-span-1 text-white bg-yellow-600"
-              />
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="flex mt-6">
-        <Button
-          size="large"
-          className="text-white bg-orange-500 hover:bg-orange-600 w-[20%]"
+    <Form
+      form={form}
+      onFinish={onFinish}
+      initialValues={{ inventories }}
+      onValuesChange={handleValuesChange}
+      layout="vertical"
+    >
+      {inventories?.map((inventory, index) => (
+        <div
+          key={inventory.id}
+          className="flex justify-between mb-4 shadow-md p-1"
         >
-          Submit
+          {/* name */}
+          <Form.Item
+            label="Name"
+            name={["inventories", index, "name"]}
+            rules={[{ required: true, message: "Name is required" }]}
+          >
+            <Input placeholder="Name" />
+          </Form.Item>
+
+          {/* date */}
+          <Form.Item
+            label="Date"
+            name={["inventories", index, "date"]}
+            rules={[{ required: true, message: "Date is required" }]}
+          >
+            <DatePicker placeholder="Select Date" />
+          </Form.Item>
+
+          {/* rate_type */}
+          <Form.Item
+            name={["inventories", index, "rate_type"]}
+            label="Rate Type"
+          >
+            <Select
+              placeholder="Select rate_type"
+              loading={isLoading}
+              options={
+                rateType
+                  ? rateType?.data?.map((item) => ({
+                      value: item.id,
+                      label: item.rate_type,
+                    }))
+                  : []
+              }
+            />
+          </Form.Item>
+
+          {/* quantity */}
+          <Form.Item
+            label="Quantity"
+            name={["inventories", index, "quantity"]}
+            rules={[{ required: true, message: "quantity is required" }]}
+          >
+            <Input placeholder="quantity" />
+          </Form.Item>
+
+          {/* amount */}
+          <Form.Item label="Amount" name={["inventories", index, "amount"]}>
+            <Input placeholder="amount" disabled />
+          </Form.Item>
+
+          {/* Image (Only Preview, No File Name) */}
+          <Form.Item
+            // label="Image"
+            name={["inventories", index, "image"]}
+            rules={[{ required: true, message: "Image is required" }]}
+          >
+            <Upload
+              style={{
+                width: "100px",
+              }}
+              beforeUpload={() => false}
+              listType="picture-card"
+              maxCount={1}
+            >
+              <div>
+                <UploadOutlined />
+                <div style={{ marginTop: 8 }}>Image</div>
+              </div>
+            </Upload>
+          </Form.Item>
+
+          <Button
+            className="self-center"
+            shape="circle"
+            icon={<MinusOutlined />}
+            onClick={() => removeRow(inventory.id)}
+          />
+        </div>
+      ))}
+      <Form.Item>
+        <Button type="dashed" onClick={addRow} icon={<PlusOutlined />}>
+          Add Inventory
         </Button>
-      </div>
-    </div>
+      </Form.Item>
+      <Form.Item>
+        <Button
+          block
+          loading={loading}
+          disabled={loading}
+          type="primary"
+          htmlType="submit"
+        >
+          Inventories Submit
+        </Button>
+      </Form.Item>
+    </Form>
   );
 };
 
