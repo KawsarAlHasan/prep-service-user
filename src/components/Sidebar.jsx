@@ -15,7 +15,12 @@ const sidebarItems = [
   {
     key: "1",
     icon: <RiDashboard3Line />,
-    label: <Link to="/" className="font-semibold"> Dashboard</Link>,
+    label: (
+      <Link to="/" className="font-semibold">
+        {" "}
+        Dashboard
+      </Link>
+    ),
   },
   {
     key: "2",
@@ -24,23 +29,37 @@ const sidebarItems = [
     children: [
       {
         key: "2-1",
-        label: <Link to='/overview'>Overview</Link>,
+        label: <Link to="/overview">Overview</Link>,
       },
       {
         key: "2-2",
-        label: <Link to='/sendinventory'>Send Inventory</Link>,
+        label: <Link to="/sendinventory">Send Inventory</Link>,
       },
     ],
   },
   {
     key: "3",
     icon: <GiReturnArrow />,
-    label: <Link to="/productReturn" className="font-semibold">Product Return</Link>,
+    label: <span className="font-semibold">Product Return</span>,
+    children: [
+      {
+        key: "3-1",
+        label: <Link to="/productReturn/overview">Overview</Link>,
+      },
+      {
+        key: "3-2",
+        label: <Link to="/productReturn">Send Product Return</Link>,
+      },
+    ],
   },
   {
     key: "4",
     icon: <FaUsers />,
-    label: <Link to="/prep" className="font-semibold">Prep</Link>,
+    label: (
+      <Link to="/prep" className="font-semibold">
+        Prep
+      </Link>
+    ),
   },
   {
     key: "5",
@@ -75,12 +94,20 @@ const sidebarItems = [
   {
     key: "7",
     icon: <RiExchangeDollarLine />,
-    label: <Link to="/rates" className="font-semibold">Rates</Link>,
+    label: (
+      <Link to="/rates" className="font-semibold">
+        Rates
+      </Link>
+    ),
   },
   {
     key: "8",
     icon: <RiExchangeDollarLine />,
-    label: <Link to="/reports" className="font-semibold">Reports</Link>,
+    label: (
+      <Link to="/reports" className="font-semibold">
+        Reports
+      </Link>
+    ),
   },
 ];
 
@@ -92,29 +119,31 @@ const Sidebar = () => {
   };
 
   return (
-   <div>
-     <Menu
-      mode="inline"
-      selectedKeys={[selectedKey]}
-      onClick={handleClick}
-      items={sidebarItems}
-      style={{
-        height: "80%",
-        borderRight: 0,
-      }}
-      theme="light" // Keep menu in light theme
-    />
-     <div className="p-4 border-t flex flex-col gap-4 bottom-0 bg-white">
+    <div>
+      <Menu
+        mode="inline"
+        selectedKeys={[selectedKey]}
+        onClick={handleClick}
+        items={sidebarItems}
+        style={{
+          height: "80%",
+          borderRight: 0,
+        }}
+        theme="light" // Keep menu in light theme
+      />
+      <div className="p-4 border-t flex flex-col gap-4 bottom-0 bg-white">
         <div className="flex items-center gap-2">
           <SettingOutlined />
-          <Link to="/settings" className="font-semibold">Settings</Link>
+          <Link to="/settings" className="font-semibold">
+            Settings
+          </Link>
         </div>
         <div className="flex items-center gap-2">
           <LogoutOutlined />
           <Link className="font-semibold">Log Out</Link>
         </div>
       </div>
-   </div>
+    </div>
   );
 };
 

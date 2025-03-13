@@ -103,3 +103,33 @@ export const useMyInventories = ({
 
   return { myInventories, pagination, isLoading, isError, error, refetch };
 };
+
+// get my returns products
+export const useMyReturnProducts = ({
+  start_date,
+  end_date,
+  page = 1,
+  limit = 10,
+} = {}) => {
+  const getMyReturnProducts = async () => {
+    const response = await API.get("/return", {
+      params: { start_date, end_date, page, limit },
+    });
+    return response.data;
+  };
+
+  const {
+    data: response = {},
+    isLoading,
+    isError,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["myReturnProducts", start_date, end_date, page, limit],
+    queryFn: getMyReturnProducts,
+  });
+
+  const { data: myReturnProducts = [], pagination = {} } = response;
+
+  return { myReturnProducts, pagination, isLoading, isError, error, refetch };
+};
