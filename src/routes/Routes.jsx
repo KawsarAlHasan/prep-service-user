@@ -3,7 +3,7 @@ import Main from "../layout/Main";
 import DashBoard from "../pages/DashBoard";
 import Overview from "../pages/investment/Overview";
 import SendInventory from "../pages/investment/SendInventory";
-import ProductReturn from "../pages/ProductReturn";
+import ProductReturn from "../pages/productReturn/ProductReturn";
 import Prep from "../pages/Prep";
 import BillOverview from "../pages/billing/BillOverview";
 import Payment from "../pages/billing/Payment";
@@ -12,6 +12,7 @@ import Report from "../pages/Report";
 import Settings from "../pages/Settings";
 import Login from "../components/Login";
 import PrivateRoute from "./PrivateRoute";
+import ReturnOverView from "../pages/productReturn/ReturnOverView";
 
 export const router = createBrowserRouter([
   {
@@ -37,6 +38,10 @@ export const router = createBrowserRouter([
       {
         path: "/sendinventory",
         element: <SendInventory />,
+      },
+      {
+        path: "/productReturn/overview",
+        element: <ReturnOverView />,
       },
       {
         path: "/productReturn",
